@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Project Ltd. - Time Card Management System</title>
+    <style>
+        :root {
+            --primary: #1f4f7b;
+            --primary-light: #2f6ea8;
+            --accent: #f5a623;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #222222;
+            --muted: #666666;
+            --border: #d9e2ec;
+            --radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            background: var(--primary);
+            color: #fff;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            min-height: calc(100vh - 70px);
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar nav */
+        nav {
+            background: #102a43;
+            color: #cbd2d9;
+            padding: 16px 0;
+        }
+
+        nav h2 {
+            margin: 0 16px 12px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9fb3c8;
+        }
+
+        nav a {
+            display: block;
+            padding: 10px 18px;
+            color: inherit;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-left: 3px solid transparent;
+        }
+
+        nav a:hover {
+            background: #1c3b57;
+            color: #fff;
+        }
+
+        nav a.active {
+            background: #243b53;
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        /* Main content */
+        main {
+            padding: 24px 32px 40px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: var(--primary);
+        }
+
+        .section-header p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        @media (min-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1.1fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px 18px 18px;
+            box-shadow: 0 2px 4px rgba(15, 35, 52, 0.05);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 0.98rem;
+            color: var(--primary);
+        }
+
+        .card p.sub {
+            margin: 0 0 16px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* Forms */
+        form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: grid;
+            gap: 10px;
+        }
+
+        @media (min-width: 720px) {
+            .form-row-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .form-row-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 7px 9px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            background: #fdfdfd;
+        }
+
+        textarea {
+            min-height: 64px;
+            resize: vertical;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 1px rgba(47, 110, 168, 0.25);
+        }
+
+        .actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border-radius: 4px;
+            border: none;
+            padding: 7px 14px;
+            font-size: 0.86rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary-light);
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        /* Tables */
+        .table-wrapper {
+            max-height: 260px;
+            overflow: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        thead {
+            background: #f0f4f8;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fbfd;
+        }
+
+        /* Helper */
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            border-radius: 999px;
+            background: #e3f8ff;
+            color: #065986;
+        }
+
+        .hint {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div>
+        <h1>New Project Ltd. – Time Card Management System</h1>
+        <p>Front-end mockup for the TimeCard database (no backend / database connected).</p>
+    </div>
+</header>
+
+<div class="layout">
+    <!-- Sidebar Navigation -->
+    <nav>
+        <h2>Modules</h2>
+        <a href="#employees" class="active">Employees</a>
+        <a href="#projects">Projects</a>
+        <a href="#clients">Clients</a>
+        <a href="#timecards">Time Cards</a>
+        <a href="#codes">Work &amp; Expense Codes</a>
+        <a href="#payments">Payments</a>
+    </nav>
+
+    <!-- Main content -->
+    <main>
+        <!-- Employees -->
+        <section id="employees" class="section">
+            <div class="section-header">
+                <h2>Employees</h2>
+                <p>Manage employee records and billing rates.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Add / Edit Employee</h3>
+                    <p class="sub">Attributes: Employee ID, First Name, Last Name, Title, Phone, Billing Rate</p>
+                    <form>
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="emp-id">Employee ID (auto-generated)</label>
+                                <input id="emp-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="emp-title">Title</label>
+                                <select id="emp-title" required>
+                                    <option value="">Select title</option>
+                                    <option value="Trainee">Trainee</option>
+                                    <option value="Team Member">Team Member</option>
+                                    <option value="Team Leader">Team Leader</option>
+                                    <option value="Project Manager">Project Manager</option>
+                                    <option value="Senior Project Manager">Senior Project Manager</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="emp-first">First Name<span class="badge">Required</span></label>
+                                <input id="emp-first" type="text" placeholder="John" required>
+                            </div>
+                            <div>
+                                <label for="emp-last">Last Name</label>
+                                <input id="emp-last" type="text" placeholder="Doe">
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="emp-phone">Phone<span class="badge">Required</span></label>
+                                <input id="emp-phone" type="tel" placeholder="11-111-1111-111-111" required pattern="[0-9]{2}-[0-9]{3}-[0-9]{4}-[0-9]{3}-[0-9]{3}" title="Phone format: 11-111-1111-111-111">
+                            </div>
+                            <div>
+                                <label for="emp-rate">Billing Rate (per hour, &gt; 0)</label>
+                                <input id="emp-rate" type="number" step="0.01" min="0.01" placeholder="75.00" required>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Employee</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">EmployeeID is auto-generated. Title is limited to the listed values. BillingRate must be greater than 0. FirstName and Phone are mandatory and Phone must match 11-111-1111-111-111.</p>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Employee List (Sample)</h3>
+                    <p class="sub">Static sample data – no live database.</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Title</th>
+                                <th>Phone</th>
+                                <th>Billing Rate</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>E001</td>
+                                <td>John Doe</td>
+                                <td>Senior Consultant</td>
+                                <td>+1 (555) 111-2222</td>
+                                <td>$90.00</td>
+                            </tr>
+                            <tr>
+                                <td>E002</td>
+                                <td>Anna Smith</td>
+                                <td>Project Manager</td>
+                                <td>+1 (555) 333-4444</td>
+                                <td>$110.00</td>
+                            </tr>
+                            <tr>
+                                <td>E003</td>
+                                <td>Michael Brown</td>
+                                <td>Developer</td>
+                                <td>+1 (555) 555-6666</td>
+                                <td>$75.00</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section id="projects" class="section">
+            <div class="section-header">
+                <h2>Projects</h2>
+                <p>Track projects, clients, estimates and assigned managers.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Add / Edit Project</h3>
+                    <p class="sub">Attributes: Project ID, Project Name, Project Description, Client ID, Billing Estimate, Employee ID (manager), Start Date, End Date</p>
+                    <form>
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="proj-id">Project ID (auto-generated)</label>
+                                <input id="proj-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="proj-name">Project Name<span class="badge">Required</span></label>
+                                <input id="proj-name" type="text" placeholder="Website Redesign" required>
+                            </div>
+                            <div>
+                                <label for="proj-client-id">Client ID (FK)</label>
+                                <input id="proj-client-id" type="text" placeholder="C001">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="proj-desc">Project Description</label>
+                                <textarea id="proj-desc" placeholder="Short description of the project scope and objectives."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="proj-emp-id">Manager Employee ID (FK)</label>
+                                <input id="proj-emp-id" type="text" placeholder="E001">
+                            </div>
+                            <div>
+                                <label for="proj-estimate">Billing Estimate (&gt; 1000)</label>
+                                <input id="proj-estimate" type="number" step="0.01" min="1000.01" placeholder="25000.00" required>
+                            </div>
+                            <div>
+                                <label for="proj-start">Start Date<span class="badge">Required</span></label>
+                                <input id="proj-start" type="date" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="proj-end">End Date (after Start Date)<span class="badge">Required</span></label>
+                                <input id="proj-end" type="date" required>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Project</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">ProjectID is auto-generated. ProjectName, StartDate and EndDate are mandatory. BillingEstimate must be greater than 1000. EndDate should be greater than StartDate. ClientID is a foreign key from CustomerDetails.Clients.</p>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Project List (Sample)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Project ID</th>
+                                <th>Name</th>
+                                <th>Client ID</th>
+                                <th>Manager (Emp ID)</th>
+                                <th>Estimate</th>
+                                <th>Start</th>
+                                <th>End</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>P1001</td>
+                                <td>Website Redesign</td>
+                                <td>C001</td>
+                                <td>E002</td>
+                                <td>$25,000</td>
+                                <td>2025-01-03</td>
+                                <td>2025-04-30</td>
+                            </tr>
+                            <tr>
+                                <td>P1002</td>
+                                <td>Mobile App</td>
+                                <td>C002</td>
+                                <td>E001</td>
+                                <td>$40,000</td>
+                                <td>2025-02-10</td>
+                                <td>2025-06-10</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clients -->
+        <section id="clients" class="section">
+            <div class="section-header">
+                <h2>Clients</h2>
+                <p>Maintain client contact details used for projects and billing.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Add / Edit Client</h3>
+                    <p class="sub">Attributes: Client ID, Company Name, Address, City, State, Zip, Country, Contact Person, Phone</p>
+                    <form>
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="client-id">Client ID (auto-generated)</label>
+                                <input id="client-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="client-company">Company Name<span class="badge">Required</span></label>
+                                <input id="client-company" type="text" placeholder="Acme Corp" required>
+                            </div>
+                            <div>
+                                <label for="client-contact">Contact Person<span class="badge">Required</span></label>
+                                <input id="client-contact" type="text" placeholder="Jane Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="client-address">Address<span class="badge">Required</span></label>
+                                <input id="client-address" type="text" placeholder="123 Main Street" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="client-city">City<span class="badge">Required</span></label>
+                                <input id="client-city" type="text" placeholder="New York" required>
+                            </div>
+                            <div>
+                                <label for="client-state">State<span class="badge">Required</span></label>
+                                <input id="client-state" type="text" placeholder="NY" required>
+                            </div>
+                            <div>
+                                <label for="client-zip">Zip<span class="badge">Required</span></label>
+                                <input id="client-zip" type="text" placeholder="10001" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="client-country">Country<span class="badge">Required</span></label>
+                                <input id="client-country" type="text" placeholder="USA" required>
+                            </div>
+                            <div>
+                                <label for="client-phone">Phone<span class="badge">Required</span></label>
+                                <input id="client-phone" type="tel" placeholder="11-111-1111-111-111" required pattern="[0-9]{2}-[0-9]{3}-[0-9]{4}-[0-9]{3}-[0-9]{3}" title="Phone format: 11-111-1111-111-111">
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Client</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">ClientID is auto-generated. CompanyName, ContactPerson, Address, City, State, Zip, Country and Phone are mandatory. Phone must match 11-111-1111-111-111.</p>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Client List (Sample)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Client ID</th>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Country</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>C001</td>
+                                <td>Acme Corp</td>
+                                <td>Jane Doe</td>
+                                <td>+1 (555) 777-8888</td>
+                                <td>New York</td>
+                                <td>USA</td>
+                            </tr>
+                            <tr>
+                                <td>C002</td>
+                                <td>Global Tech</td>
+                                <td>Sam Green</td>
+                                <td>+44 20 1234 5678</td>
+                                <td>London</td>
+                                <td>UK</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Time Cards -->
+        <section id="timecards" class="section">
+            <div class="section-header">
+                <h2>Time Cards</h2>
+                <p>Capture hours and expenses for billable work.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Time Card Header</h3>
+                    <p class="sub">Attributes: Time Card ID, Employee ID, Project ID, Date Issued, Days Worked</p>
+                    <form>
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="tc-id">Time Card ID (auto-generated)</label>
+                                <input id="tc-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="tc-emp-id">Employee ID (FK)<span class="badge">Required</span></label>
+                                <input id="tc-emp-id" type="text" placeholder="E003" required>
+                            </div>
+                            <div>
+                                <label for="tc-date">Date Issued (after current &amp; project start)</label>
+                                <input id="tc-date" type="date" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="tc-project-id">Project ID (FK)<span class="badge">Required</span></label>
+                                <input id="tc-project-id" type="text" placeholder="P1001" required>
+                            </div>
+                            <div>
+                                <label for="tc-days">Days Worked (&gt; 0)</label>
+                                <input id="tc-days" type="number" min="1" step="1" placeholder="1" required>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Time Card</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">TimeCardID is auto-generated. EmployeeID and ProjectID are foreign keys. DateIssued should be greater than the current date and the project start date. DaysWorked must be greater than 0.</p>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Time Card Hours (Detail)</h3>
+                    <p class="sub">Attributes: Time Card Detail ID, Time Card ID, Date Worked, Project ID, Work Description, Billable Hours (&gt; 0), Total Cost (auto), Work Code ID</p>
+                    <form>
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="tch-detail-id">Detail ID (auto-generated)</label>
+                                <input id="tch-detail-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="tch-tc-id">Time Card ID (FK)<span class="badge">Required</span></label>
+                                <input id="tch-tc-id" type="text" placeholder="TC2025-001" required>
+                            </div>
+                            <div>
+                                <label for="tch-date">Date Worked</label>
+                                <input id="tch-date" type="date">
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="tch-project-id">Project ID (FK)</label>
+                                <input id="tch-project-id" type="text" placeholder="P1001">
+                            </div>
+                            <div>
+                                <label for="tch-work-code">Work Code ID (FK)<span class="badge">Required</span></label>
+                                <input id="tch-work-code" type="text" placeholder="WC01" required>
+                            </div>
+                            <div>
+                                <label for="tch-hours">Billable Hours (&gt; 0)</label>
+                                <input id="tch-hours" type="number" step="0.25" min="0.25" placeholder="8.00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="tch-desc">Work Description</label>
+                                <textarea id="tch-desc" placeholder="Development work on feature X."></textarea>
+                            </div>
+                            <div>
+                                <label for="tch-cost">Total Cost (Billable Hours * BillingRate)</label>
+                                <input id="tch-cost" type="number" step="0.01" placeholder="Auto-calculated" readonly>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Add Hours Entry</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">Billable hours must be greater than 0. TotalCost is calculated as Billable Hours * BillingRate in the database.</p>
+                    </form>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="margin-top: 18px;">
+                <div class="card">
+                    <h3>Time Card Expenses</h3>
+                    <p class="sub">Attributes: Time Card Expense ID, Time Card ID, Expense Date, Project ID, Expense Description, Expense Amount (&gt; 0), Expense ID (FK)</p>
+                    <form>
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="tce-id">Time Card Expense ID (auto-generated)</label>
+                                <input id="tce-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="tce-tc-id">Time Card ID (FK)<span class="badge">Required</span></label>
+                                <input id="tce-tc-id" type="text" placeholder="TC2025-001" required>
+                            </div>
+                            <div>
+                                <label for="tce-date">Expense Date (not NULL)</label>
+                                <input id="tce-date" type="date" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="tce-project-id">Project ID (FK)</label>
+                                <input id="tce-project-id" type="text" placeholder="P1001">
+                            </div>
+                            <div>
+                                <label for="tce-code-id">Expense ID (from ExpenseDetails)</label>
+                                <input id="tce-code-id" type="text" placeholder="EC01">
+                            </div>
+                            <div>
+                                <label for="tce-amount">Expense Amount (&gt; 0)</label>
+                                <input id="tce-amount" type="number" step="0.01" min="0.01" placeholder="150.00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="tce-desc">Expense Description</label>
+                                <textarea id="tce-desc" placeholder="Taxi fare to client site."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Add Expense Entry</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">TimeCardExpenseID is auto-generated. ExpenseDate cannot be NULL and should be before the project end date. ExpenseAmount must be greater than 0. ExpenseID is a foreign key from ExpenseDetails.</p>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Recent Time Card Entries (Sample)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>TC ID</th>
+                                <th>Emp ID</th>
+                                <th>Date Issued</th>
+                                <th>Total Hours</th>
+                                <th>Total Expenses</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>TC2025-001</td>
+                                <td>E003</td>
+                                <td>2025-03-01</td>
+                                <td>16.0</td>
+                                <td>$230.00</td>
+                            </tr>
+                            <tr>
+                                <td>TC2025-002</td>
+                                <td>E001</td>
+                                <td>2025-03-02</td>
+                                <td>8.0</td>
+                                <td>$0.00</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Work Codes & Expense Codes -->
+        <section id="codes" class="section">
+            <div class="section-header">
+                <h2>Work &amp; Expense Codes</h2>
+                <p>Reference data for categorizing hours and expenses.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Work Codes</h3>
+                    <p class="sub">Attributes: Work Code ID, Description (NOT NULL)</p>
+                    <form>
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="wc-id">Work Code ID (auto-generated)</label>
+                                <input id="wc-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="wc-desc">Description<span class="badge">Required</span></label>
+                                <input id="wc-desc" type="text" placeholder="Development" required>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Work Code</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">WorkCodeID is auto-generated. Description must not be NULL.</p>
+                    </form>
+
+                    <div class="table-wrapper" style="margin-top: 14px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Work Code ID</th>
+                                <th>Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>WC01</td>
+                                <td>Development</td>
+                            </tr>
+                            <tr>
+                                <td>WC02</td>
+                                <td>Project Management</td>
+                            </tr>
+                            <tr>
+                                <td>WC03</td>
+                                <td>Testing</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Expense Codes (ExpenseDetails)</h3>
+                    <p class="sub">Attributes: Expense ID, Description (NOT NULL)</p>
+                    <form>
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="ec-id">Expense ID (auto-generated)</label>
+                                <input id="ec-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="ec-desc">Description<span class="badge">Required</span></label>
+                                <input id="ec-desc" type="text" placeholder="Travel" required>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Expense Code</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">ExpenseID is auto-generated. Description must not be NULL.</p>
+                    </form>
+
+                    <div class="table-wrapper" style="margin-top: 14px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Expense Code ID</th>
+                                <th>Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>EC01</td>
+                                <td>Travel</td>
+                            </tr>
+                            <tr>
+                                <td>EC02</td>
+                                <td>Meals</td>
+                            </tr>
+                            <tr>
+                                <td>EC03</td>
+                                <td>Accommodation</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payments -->
+        <section id="payments" class="section">
+            <div class="section-header">
+                <h2>Payments</h2>
+                <p>Record client payments against projects.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Payment Entry</h3>
+                    <p class="sub">Attributes: Payment ID, Project ID, Payment Amount (&gt; 0), Payment Date, Credit Card Number, Card Holder's Name, Credit Card Expiry Date, Payment Method ID, Payment Due</p>
+                    <form>
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="pay-id">Payment ID (auto-generated)</label>
+                                <input id="pay-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="pay-project-id">Project ID (FK)<span class="badge">Required</span></label>
+                                <input id="pay-project-id" type="text" placeholder="P1001" required>
+                            </div>
+                            <div>
+                                <label for="pay-date">Payment Date (after project end)</label>
+                                <input id="pay-date" type="date" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="pay-amount">Payment Amount (&gt; 0)</label>
+                                <input id="pay-amount" type="number" step="0.01" min="0.01" placeholder="1200.00" required>
+                            </div>
+                            <div>
+                                <label for="pay-due">Payment Due (≤ Payment Amount, can be NULL)</label>
+                                <input id="pay-due" type="number" step="0.01" min="0.00" placeholder="0.00">
+                            </div>
+                            <div>
+                                <label for="pay-method-id">Payment Method ID (FK)</label>
+                                <input id="pay-method-id" type="text" placeholder="PM01">
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-3">
+                            <div>
+                                <label for="cc-number">Credit Card Number (if method is Credit Card)</label>
+                                <input id="cc-number" type="text" placeholder="XXXX-XXXX-XXXX-1234">
+                            </div>
+                            <div>
+                                <label for="cc-name">Card Holder's Name (if method is Credit Card)</label>
+                                <input id="cc-name" type="text" placeholder="Jane Doe">
+                            </div>
+                            <div>
+                                <label for="cc-exp">Expiry Date (after Payment Date)</label>
+                                <input id="cc-exp" type="month">
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Record Payment</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">PaymentID is auto-generated. PaymentAmount must be greater than 0. PaymentDate should be greater than the project end date. If a credit card is not used, card fields may be left blank. If a credit card is used, card fields must be filled and Expiry should be after PaymentDate. PaymentDue should not be greater than PaymentAmount.</p>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Payment Methods</h3>
+                    <p class="sub">Attributes: Payment Method ID, Description (NOT NULL)</p>
+                    <form>
+                        <div class="form-row form-row-2">
+                            <div>
+                                <label for="pm-id">Payment Method ID (auto-generated)</label>
+                                <input id="pm-id" type="text" placeholder="Auto-generated" readonly>
+                            </div>
+                            <div>
+                                <label for="pm-desc">Description<span class="badge">Required</span></label>
+                                <input id="pm-desc" type="text" placeholder="Credit Card" required>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn-primary">Save Payment Method</button>
+                            <button type="reset" class="btn-outline">Clear</button>
+                        </div>
+                        <p class="hint">PaymentMethodID is auto-generated. Description cannot be blank.</p>
+                    </form>
+
+                    <div class="table-wrapper" style="margin-top: 14px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Payment Method ID</th>
+                                <th>Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>PM01</td>
+                                <td>Credit Card</td>
+                            </tr>
+                            <tr>
+                                <td>PM02</td>
+                                <td>Bank Transfer</td>
+                            </tr>
+                            <tr>
+                                <td>PM03</td>
+                                <td>Cheque</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
